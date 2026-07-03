@@ -12,6 +12,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <link rel="stylesheet" href="style.css">
+
+
+
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
 </head>
 <body>
 
@@ -463,6 +468,25 @@
 
 
     <script>
+
+
+
+
+
+
+
+
+        if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker terdaftar dengan sukses:', reg.scope))
+        .catch(err => console.error('Service Worker gagal didaftarkan:', err));
+    });
+  }
+
+
+
+  
     // Pastikan ID ini sesuai dengan yang ada di HTML-mu
     const btnProfile = document.getElementById('btn-profile-mobile'); // ID tombol profil
     const menuProfile = document.getElementById('profile-container-mobile'); // ID menu profil
