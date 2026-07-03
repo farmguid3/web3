@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Petani - Farmguide</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root { --green-50: #f0fdf4; --green-100: #dcfce7; --green-600: #16a34a; --green-700: #15803d; --green-800: #166534; --gray-50: #f9fafb; --gray-200: #e5e7eb; --gray-400: #9ca3af; --gray-500: #6b7280; --gray-600: #4b5563; --gray-800: #1f2937; --gray-900: #111827; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--gray-50); margin: 0; padding: 0; }
+        .profile-wrapper { max-width: 650px; margin: 40px auto; padding: 0 16px; }
+        .profile-card { background: white; border-radius: 24px; border: 2px solid var(--gray-200); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); overflow: hidden; margin-bottom: 24px; }
+        .profile-banner { background: linear-gradient(135deg, var(--green-800), var(--green-600)); height: 120px; position: relative; }
+        .profile-avatar-zone { position: relative; text-align: center; margin-top: -60px; margin-bottom: 16px; }
+        .profile-avatar-big { width: 110px; height: 110px; border-radius: 50%; border: 5px solid white; object-fit: cover; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .profile-info-body { padding: 24px; }
+        .profile-header-text { text-align: center; margin-bottom: 24px; }
+        .profile-header-text h2 { font-size: 1.5rem; color: var(--gray-900); font-weight: 700; margin: 0; }
+        .profile-header-text p { color: var(--green-700); font-weight: 600; font-size: 0.85rem; margin: 4px 0 0 0; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .info-box { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .info-box i { color: var(--green-600); margin-bottom: 8px; width: 28px; height: 28px; }
+        .info-box span.val { font-size: 1.1rem; font-weight: 700; color: var(--gray-900); }
+        .info-box span.lbl { font-size: 0.75rem; color: var(--gray-500); font-weight: 500; }
+        
+        .section-title { font-size: 1.1rem; font-weight: 700; color: var(--gray-900); margin-top: 32px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .chart-wrapper { background: white; padding: 16px; border: 1px solid var(--gray-200); border-radius: 16px; margin-bottom: 24px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; }
+        .form-control { width: 100%; box-sizing: border-box; padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; transition: border-color 0.2s; }
+        .form-control:focus { outline: none; border-color: var(--green-600); box-shadow: 0 0 0 3px var(--green-100); }
+        .form-row { display: flex; gap: 8px; align-items: flex-start; }
+        
+        .btn-action { background: var(--green-600); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        .btn-action:hover { background: var(--green-700); }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-800); width: auto; white-space: nowrap; height: fit-content; }
+        .btn-secondary:hover { background: var(--gray-400); }
+
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--gray-200); border-radius: 12px; text-decoration: none; color: inherit; transition: all 0.2s; }
+        .history-item:hover { border-color: var(--green-600); box-shadow: 0 4px 12px rgba(22, 163, 74, 0.1); transform: translateY(-2px); }
+        .h-info h4 { margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 600; }
+        .h-meta { font-size: 0.8rem; color: var(--gray-500); }
+        .h-count { background: var(--green-100); color: var(--green-800); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;}
+        .h-count.opened-only { background: var(--gray-200); color: var(--gray-800); }
+        
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gray-600); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .profile-footer-nav { padding: 16px 24px; background: var(--gray-50); border-top: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+        .hidden { display: none !important; }
+        @media (max-width: 500px) { .info-grid { grid-template-columns: 1fr; } .form-row { flex-direction: column; } .btn-secondary { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header" style="background: white; padding: 16px; border-bottom: 1px solid var(--gray-200); text-align: center;">
+        <h1 style="margin: 0; font-size: 1.2rem; color: var(--green-700); display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <i data-lucide="sprout"></i> Farmguide
+        </h1>
+    </header>
+
+    <main class="main-content">
+        <div class="profile-wrapper">
+            
+            <div id="profile-loading" class="profile-card" style="text-align: center; padding: 60px;">
+                <i data-lucide="loader-2" class="spin-icon" style="width: 40px; height: 40px; color: var(--green-600); margin-bottom: 12px;"></i>
+                <p style="color: var(--gray-500); font-weight: 500;">Memuat Database Anda...</p>
+            </div>
+
+            <div id="profile-logged-in" class="profile-card hidden">
+                <div class="profile-banner"></div>
+                <div class="profile-avatar-zone">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar">
+                </div>
+
+                <div class="profile-info-body">
+                    <div class="profile-header-text">
+                        <h2 id="prof-name-title">Memuat...</h2>
+                        <p id="prof-email-tag">email@petani.com</p>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <i data-lucide="calendar-days"></i>
+                            <span class="val" id="prof-account-age">Baru Saja</span>
+                            <span class="lbl">Umur Akun</span>
+                        </div>
+                        <div class="info-box">
+                            <i data-lucide="clock"></i>
+                            <span class="val" id="prof-total-time">0 Detik</span>
+                            <span class="lbl">Durasi Membaca</span>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title"><i data-lucide="contact"></i> Data & Kontak</h3>
+                    <div style="background: var(--gray-50); padding: 20px; border-radius: 16px; border: 1px solid var(--gray-200); margin-bottom: 24px;">
+                        
+                        <div class="form-group">
+                            <label for="input-phone">Nomor Telepon</label>
+                            <input type="tel" id="input-phone" class="form-control" placeholder="Contoh: 08123456789">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-address">Alamat Utama</label>
+                            <textarea id="input-address" class="form-control" rows="3" placeholder="Masukkan alamat lengkap rumah/kebun..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Lokasi GPS (Koordinat & Alamat Lengkap)</label>
+                            <div class="form-row">
+                                <textarea id="input-gps" class="form-control" rows="4" placeholder="Belum ada data lokasi" readonly style="background: var(--gray-200); resize: none; line-height: 1.5;"></textarea>
+                                <button type="button" id="btn-get-gps" class="btn-action btn-secondary">
+                                    <i data-lucide="map-pin"></i> Ambil Lokasi
+                                </button>
+                            </div>
+                            <small style="color: var(--gray-500); display: block; margin-top: 6px;">Pastikan GPS/Lokasi menyala di HP Anda sebelum menekan tombol.</small>
+                        </div>
+
+                        <button id="btn-save-data" class="btn-action" style="margin-top: 12px;">
+                            <i data-lucide="save"></i> Simpan Data Pribadi
+                        </button>
+                    </div>
+
+                    <h3 class="section-title"><i data-lucide="bar-chart-2"></i> Analisis Modul</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="readingChart" height="200"></canvas>
+                    </div>
+
+                    <h3 class="section-title"><i data-lucide="history"></i> Riwayat Modul (Dibuka & Dibaca)</h3>
+                    <div id="history-container" class="history-list"></div>
+                </div>
+
+                <div class="profile-footer-nav">
+                    <a href="index.html" class="btn-back"><i data-lucide="arrow-left"></i> Kembali</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script>
+        lucide.createIcons();
+        const loadingUI = document.getElementById('profile-loading');
+        const profileUI = document.getElementById('profile-logged-in');
+        const historyContainer = document.getElementById('history-container');
+        let readingChartInstance = null;
+        let currentUserDocId = null;
+
+        const inputPhone = document.getElementById('input-phone');
+        const inputAddress = document.getElementById('input-address');
+        const inputGps = document.getElementById('input-gps');
+        const btnGetGps = document.getElementById('btn-get-gps');
+        const btnSaveData = document.getElementById('btn-save-data');
+
+        function formatDate(dateObj) {
+            if (!dateObj) return "-";
+            return dateObj.toLocaleDateString('id-ID', { 
+                day: 'numeric', month: 'short', year: 'numeric', 
+                hour: '2-digit', minute:'2-digit', second:'2-digit' 
+            });
+        }
+        
+        function getAccountAge(creationTimeStr) {
+            const createdDate = new Date(creationTimeStr);
+            const diffTime = Math.abs(new Date() - createdDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays === 1 ? "Hari ini" : `${diffDays} Hari`;
+        }
+
+        function formatDuration(totalSeconds) {
+            if (!totalSeconds) return "0 Detik";
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            
+            let result = [];
+            if (h > 0) result.push(`${h} Jam`);
+            if (m > 0) result.push(`${m} Menit`);
+            if (s > 0 || result.length === 0) result.push(`${s} Detik`);
+            return result.join(' ');
+        }
+
+        function renderChart(historyData) {
+            const ctx = document.getElementById('readingChart').getContext('2d');
+            const sortedData = [...historyData].filter(d => d.readCount > 0).sort((a, b) => b.readCount - a.readCount).slice(0, 5);
+            
+            if (readingChartInstance) readingChartInstance.destroy();
+            readingChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedData.map(item => item.judul.length > 15 ? item.judul.substring(0, 15) + '...' : item.judul),
+                    datasets: [{
+                        label: 'Kali Selesai Dibaca',
+                        data: sortedData.map(item => item.readCount),
+                        backgroundColor: '#16a34a',
+                        borderRadius: 6,
+                    }]
+                }
+            });
+        }
+
+        async function loadUserProfile(user) {
+            try {
+                const cleanName = (user.displayName || "Petani").replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+                currentUserDocId = `${user.uid}_${cleanName}`;
+                const userRef = db.collection("users").doc(currentUserDocId);
+                let userSnap = await userRef.get();
+                
+                if (!userSnap.exists) {
+                    await userRef.set({
+                        name: user.displayName || "Petani",
+                        email: user.email,
+                        totalWaktuMembaca: 0,
+                        phone: "",
+                        address: "",
+                        gps: ""
+                    });
+                    userSnap = await userRef.get();
+                }
+
+                const userData = userSnap.data();
+
+                document.getElementById('prof-name-title').textContent = user.displayName || "Petani Farmguide";
+                document.getElementById('prof-email-tag').textContent = user.email;
+                document.getElementById('prof-account-age').textContent = getAccountAge(user.metadata.creationTime);
+                document.getElementById('prof-total-time').textContent = formatDuration(userData.totalWaktuMembaca);
+
+                inputPhone.value = userData.phone || "";
+                inputAddress.value = userData.address || "";
+                inputGps.value = userData.gps || "";
+
+                const historySnapshot = await userRef.collection("riwayat_baca").get();
+                let historyData = [];
+                historySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    historyData.push({
+                        moduleId: doc.id,
+                        judul: data.judul,
+                        readCount: data.readCount || 0,
+                        lastRead: data.lastRead ? data.lastRead.toDate() : new Date()
+                    });
+                });
+
+                renderChart(historyData);
+                
+                historyContainer.innerHTML = '';
+                if(historyData.length === 0) historyContainer.innerHTML = '<p style="text-align:center; color:#6b7280;">Belum ada riwayat (dibuka/dibaca).</p>';
+                
+                const sortedHistory = historyData.sort((a, b) => b.lastRead - a.lastRead);
+                sortedHistory.forEach(item => {
+                    const isFinished = item.readCount > 0;
+                    const badgeClass = isFinished ? "h-count" : "h-count opened-only";
+                    const badgeText = isFinished ? `${item.readCount}x Selesai` : "Baru Dibuka";
+                    const iconName = isFinished ? "check-circle" : "book-open";
+
+                    historyContainer.innerHTML += `
+                        <a href="baca-modul.html?id=${item.moduleId}" class="history-item">
+                            <div class="h-info">
+                                <h4>${item.judul}</h4>
+                                <div class="h-meta"><span><i data-lucide="clock" style="width:14px"></i> ${formatDate(item.lastRead)}</span></div>
+                            </div>
+                            <div class="${badgeClass}"><i data-lucide="${iconName}" style="width:14px"></i> ${badgeText}</div>
+                        </a>
+                    `;
+                });
+                
+                lucide.createIcons();
+                loadingUI.classList.add('hidden');
+                profileUI.classList.remove('hidden');
+
+            } catch (error) { console.error(error); }
+        }
+
+        // UPDATE: Integrasi Reverse Geocoding API 
+        btnGetGps.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                btnGetGps.innerHTML = `<i data-lucide="loader-2" class="spin-icon"></i> Mencari...`;
+                lucide.createIcons();
+                
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        try {
+                            // Mengambil alamat lengkap menggunakan OpenStreetMap (Nominatim)
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                            const data = await response.json();
+                            
+                            const fullAddress = data.display_name || "Alamat tidak dikenali oleh satelit.";
+                            
+                            // Menyatukan titik koordinat dan alamat lengkap ke dalam Textarea
+                            inputGps.value = `📍 Koordinat: ${lat}, ${lng}\n🏠 Lokasi: ${fullAddress}`;
+                            
+                        } catch (error) {
+                            console.error("Gagal reverse geocoding:", error);
+                            inputGps.value = `📍 Koordinat: ${lat}, ${lng}\n(Gagal memuat nama lokasi, pastikan internet stabil)`;
+                        }
+                        
+                        btnGetGps.innerHTML = `<i data-lucide="map-pin"></i> Ambil Lokasi`;
+                        lucide.createIcons();
+                    },
+                    (error) => {
+                        alert("Gagal mendapatkan lokasi. Pastikan izin lokasi menyala di browser/HP Anda.");
+                        btnGetGps.innerHTML = `<i data-lucide="map-pin"></i> Ambil Lokasi`;
+                        lucide.createIcons();
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                alert("Browser atau HP Anda tidak mendukung GPS.");
+            }
+        });
+
+        btnSaveData.addEventListener('click', async () => {
+            if (!currentUserDocId) return;
+            
+            const originText = btnSaveData.innerHTML;
+            btnSaveData.innerHTML = `<i data-lucide="loader-2" class="spin-icon"></i> Menyimpan...`;
+            lucide.createIcons();
+            btnSaveData.disabled = true;
+
+            try {
+                await db.collection("users").doc(currentUserDocId).set({
+                    phone: inputPhone.value,
+                    address: inputAddress.value,
+                    gps: inputGps.value
+                }, { merge: true });
+                
+                alert("Data pribadi berhasil disimpan!");
+            } catch (error) {
+                console.error("Gagal menyimpan data:", error);
+                alert("Terjadi kesalahan saat menyimpan data.");
+            }
+
+            btnSaveData.innerHTML = originText;
+            btnSaveData.disabled = false;
+        });
+
+        auth.onAuthStateChanged((user) => {
+            if (user) loadUserProfile(user);
+            else window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html>

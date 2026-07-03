@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mulai Obrolan - Farmguide</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="chatlist.css">
+</head>
+<body>
+
+    <div class="contact-container">
+        
+        <div class="contact-header">
+            <div class="header-left">
+                <i data-lucide="arrow-left" class="back-btn" onclick="window.location.href='index.html'"></i>
+                <div>
+                    <h2>Mulai Obrolan</h2>
+                    <p>Daftar Kontak Petani</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="nav-direct-btn" onclick="window.location.href='index.html'" title="Home">
+                    <i data-lucide="home"></i>
+                </button>
+                <button class="nav-direct-btn" onclick="window.location.href='feed.html'" title="Feed">
+                    <i data-lucide="layout-list"></i>
+                </button>
+                <button class="nav-direct-btn" onclick="window.location.href='roomchat.html'" title="Grup Chat">
+                    <i data-lucide="users"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="search-area">
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Cari nama atau email...">
+            </div>
+        </div>
+
+        <div id="contact-list" class="contact-list">
+            <div class="loading-state">
+                <i data-lucide="loader-2" class="spin-icon"></i>
+                <p>Memuat daftar pengguna...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="chatlist.js"></script>
+</body>
+</html>

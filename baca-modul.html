@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membaca Modul - Farmguide</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root { 
+            --green-50: #f0fdf4; 
+            --green-100: #dcfce7; 
+            --green-500: #22c55e;
+            --green-600: #16a34a; 
+            --green-700: #15803d; 
+            --gray-50: #f8fafc; 
+            --gray-100: #f1f5f9; 
+            --gray-200: #e2e8f0; 
+            --gray-300: #cbd5e1; 
+            --gray-500: #64748b; 
+            --gray-700: #334155; 
+            --gray-800: #1e293b; 
+            --yellow-400: #facc15;
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--gray-50); 
+            color: var(--gray-700); 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.8; 
+        }
+
+        /* Reading Progress Bar di Atas Layar */
+        .progress-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 5px; 
+            background: var(--gray-200); 
+            z-index: 100; 
+        }
+        .progress-bar { 
+            height: 100%; 
+            background: var(--green-500); 
+            width: 0%; 
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* Wadah Pembaca Konten */
+        .reader-container { 
+            max-width: 720px; 
+            margin: 60px auto; 
+            background: white; 
+            padding: 50px 60px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05); 
+        }
+
+        /* Tombol Kembali */
+        .back-btn { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            color: var(--gray-500); 
+            font-weight: 500; 
+            font-size: 0.95rem; 
+            margin-bottom: 32px; 
+            padding: 8px 16px; 
+            background: var(--gray-100); 
+            border-radius: 30px; 
+            transition: all 0.3s; 
+        }
+        .back-btn:hover { 
+            color: var(--green-700); 
+            background: var(--green-50); 
+            transform: translateX(-4px); 
+        }
+
+        /* Header Modul */
+        .modul-header { 
+            margin-bottom: 40px; 
+            border-bottom: 2px dashed var(--gray-200); 
+            padding-bottom: 24px; 
+        }
+        .modul-title { 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            color: var(--gray-800); 
+            margin: 0 0 20px 0; 
+            line-height: 1.3; 
+            letter-spacing: -0.5px;
+        }
+        .modul-meta { 
+            display: flex; 
+            gap: 12px; 
+            font-size: 0.85rem; 
+            font-weight: 500; 
+            color: var(--gray-700); 
+            flex-wrap: wrap; 
+        }
+        .modul-meta span { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: var(--gray-100); 
+            padding: 6px 16px; 
+            border-radius: 20px; 
+        }
+        .modul-meta span i { 
+            width: 14px; 
+            height: 14px; 
+            color: var(--green-600); 
+        }
+
+        /* Isi Konten Materi */
+        .modul-content { 
+            color: var(--gray-700); 
+        }
+        .modul-content p { 
+            margin-bottom: 24px; 
+            font-size: 1.1rem; 
+            letter-spacing: 0.2px; 
+        }
+
+        /* Animasi Muncul Lembut (Fade In Up) */
+        .fade-in-up { 
+            opacity: 0; 
+            transform: translateY(20px); 
+            animation: fadeInUp 0.6s ease forwards; 
+        }
+        @keyframes fadeInUp { 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Aturan Tombol */
+        .btn-action { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            width: 100%; 
+            border: none; 
+            padding: 16px 24px; 
+            border-radius: 16px; 
+            font-family: 'Poppins', sans-serif; 
+            font-weight: 600; 
+            font-size: 1.05rem; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .btn-primary { 
+            background: var(--green-600); 
+            color: white; 
+            margin-top: 40px; 
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.2); 
+        }
+        .btn-primary:hover { 
+            background: var(--green-700); 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3); 
+        }
+        .btn-finish { 
+            background: var(--green-700); 
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3); 
+        }
+        .btn-finish:hover { 
+            background: black; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); 
+        }
+        .btn-outline { 
+            background: white; 
+            border: 2px solid var(--gray-200); 
+            color: var(--gray-600); 
+        }
+        .btn-outline:hover { 
+            background: var(--gray-50); 
+            border-color: var(--gray-300); 
+        }
+
+        /* Panel Kotak Ulasan Modul (Input Rating & Testimoni) */
+        .review-box { 
+            display: none; 
+            margin-top: 40px; 
+            padding: 32px; 
+            background: var(--gray-50); 
+            border-radius: 20px; 
+            border: 1px solid var(--gray-200); 
+            text-align: center; 
+            opacity: 0; 
+            animation: fadeInUp 0.6s ease forwards; 
+        }
+        .review-title { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--gray-800); 
+            margin-top: 0; 
+            margin-bottom: 8px; 
+        }
+        .review-subtitle { 
+            font-size: 0.95rem; 
+            color: var(--gray-500); 
+            margin-bottom: 24px; 
+        }
+        
+        /* Baris Bintang Input */
+        .stars { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 24px; 
+        }
+        .star-icon { 
+            color: var(--gray-300); 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            width: 40px; 
+            height: 40px; 
+        }
+        .star-icon:hover, .star-icon.active { 
+            color: var(--yellow-400); 
+            transform: scale(1.1); 
+        }
+        .star-icon.active svg { 
+            fill: var(--yellow-400); 
+        }
+
+        /* Kolom Input Komentar */
+        .comment-input { 
+            width: 100%; 
+            box-sizing: border-box; 
+            padding: 16px; 
+            border: 2px solid var(--gray-200); 
+            border-radius: 12px; 
+            margin-bottom: 24px; 
+            font-family: inherit; 
+            font-size: 1rem; 
+            resize: vertical; 
+            min-height: 100px; 
+            transition: border-color 0.3s; 
+        }
+        .comment-input:focus { 
+            outline: none; 
+            border-color: var(--green-500); 
+        }
+        
+        .review-actions { 
+            display: flex; 
+            gap: 16px; 
+        }
+        .review-actions button { 
+            margin-top: 0; 
+        }
+
+        /* --- STYLING LIST ULASAN PEMBACA LAIN --- */
+        .reviews-list-box {
+            margin-top: 50px;
+            border-top: 2px solid var(--gray-200);
+            padding-top: 32px;
+        }
+        .reviews-list-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .review-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .review-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .review-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .review-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--green-100);
+            color: var(--green-700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .review-author {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 1rem;
+        }
+        .review-card-stars {
+            display: flex;
+            gap: 4px;
+        }
+        .review-card-stars svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--yellow-400);
+            stroke: var(--yellow-400);
+        }
+        /* Style khusus untuk bintang kosong pada list */
+        .review-card-stars .empty-star svg {
+            fill: none;
+            stroke: var(--gray-300);
+        }
+        .review-text {
+            font-size: 0.95rem;
+            color: var(--gray-700);
+            margin: 0;
+            line-height: 1.6;
+        }
+        .no-reviews-msg {
+            color: var(--gray-500);
+            text-align: center;
+            font-style: italic;
+            padding: 24px 0;
+        }
+
+        /* Loading Skenario */
+        #loading-state { 
+            text-align: center; 
+            padding: 80px 0; 
+            color: var(--gray-500); 
+        }
+        .spin-icon { 
+            animation: spin 1.5s linear infinite; 
+        }
+        @keyframes spin { 
+            100% { transform: rotate(360deg); } 
+        }
+
+        /* Responsif Layar Kecil HP */
+        @media (max-width: 768px) {
+            .reader-container { margin: 0; border-radius: 0; padding: 30px 20px; box-shadow: none; min-height: 100vh;}
+            .modul-title { font-size: 1.8rem; }
+            .modul-content p { font-size: 1.05rem; }
+            .review-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="reading-progress"></div>
+    </div>
+
+    <div class="reader-container">
+        <a href="index.html" class="back-btn"><i data-lucide="arrow-left"></i> Kembali</a>
+        
+        <div id="loading-state">
+            <i data-lucide="loader-2" class="spin-icon" style="width: 48px; height: 48px; margin-bottom: 16px; color: var(--green-600);"></i>
+            <p>Menyiapkan modul terbaik untukmu...</p>
+        </div>
+        
+        <div id="modul-area" style="display: none;">
+            <div class="modul-header">
+                <h1 id="m-title" class="modul-title">Memuat Judul...</h1>
+                <div class="modul-meta">
+                    <span><i data-lucide="tag"></i> <span id="m-category">Kategori</span></span>
+                    <span><i data-lucide="bar-chart"></i> <span id="m-level">Level</span></span>
+                </div>
+            </div>
+            
+            <div id="m-content" class="modul-content"></div>
+            
+            <button id="btn-lanjut" class="btn-action btn-primary">Lanjut Membaca <i data-lucide="arrow-down"></i></button>
+
+            <div id="review-section" class="review-box">
+                <h3 class="review-title">Bagaimana materi ini?</h3>
+                <p class="review-subtitle">Bantu kami meningkatkan kualitas materi dengan ulasan Anda.</p>
+                
+                <div class="stars" id="star-container">
+                    <span class="star-icon" data-val="1"><i data-lucide="star"></i></span>
+                    <span class="star-icon" data-val="2"><i data-lucide="star"></i></span>
+                    <span class="star-icon" data-val="3"><i data-lucide="star"></i></span>
+                    <span class="star-icon" data-val="4"><i data-lucide="star"></i></span>
+                    <span class="star-icon" data-val="5"><i data-lucide="star"></i></span>
+                </div>
+                
+                <textarea id="comment-box" class="comment-input" placeholder="Tulis pendapat atau hal baru yang Anda pelajari di sini... (Opsional)"></textarea>
+                
+                <div class="review-actions">
+                    <button id="btn-skip" class="btn-action btn-outline">Lewati</button>
+                    <button id="btn-submit-review" class="btn-action btn-primary" style="flex: 2;">Kirim Ulasan <i data-lucide="send"></i></button>
+                </div>
+            </div>
+
+            <div id="reviews-list-container" class="reviews-list-box">
+                <h3 class="reviews-list-title"><i data-lucide="message-square"></i> Ulasan Pembaca (<span id="review-count">0</span>)</h3>
+                <div id="reviews-display-area">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // --- KODE CONFIG FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOdMX5y27KYI-Sko82wUV89AzG8yJSMxY",
+            authDomain: "farmguide-62827.firebaseapp.com",
+            projectId: "farmguide-62827",
+            storageBucket: "farmguide-62827.firebasestorage.app",
+            messagingSenderId: "407792688035",
+            appId: "1:407792688035:web:d21abc766dc4589fe11816",
+            measurementId: "G-JD66VYW3EG"
+        };
+
+        // Inisialisasi Layanan Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Rendering Ikon Awal dari Lucide
+        lucide.createIcons();
+
+        // Menangkap parameter ID dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const moduleId = urlParams.get('id');
+
+        let allParagraphs = [];
+        let currentIndex = 0;
+        const paragraphsPerView = 4; 
+        let moduleTitle = "Tanpa Judul";
+        
+        let timeStart = Date.now();
+        let currentUserDocId = null;
+        let currentUserId = null;
+        let currentUserName = "Petani";
+        let selectedRating = 0; 
+
+        const contentContainer = document.getElementById('m-content');
+        const btnLanjut = document.getElementById('btn-lanjut');
+        const progressBar = document.getElementById('reading-progress');
+        const reviewSection = document.getElementById('review-section');
+
+        // 1. Memvalidasi Sesi Login User Aktif
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUserId = user.uid;
+                currentUserName = user.displayName || "Petani";
+                const cleanName = currentUserName.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+                currentUserDocId = `${user.uid}_${cleanName}`;
+                
+                fetchModulDetail();
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        // 2. Mengambil Detail Isi Data Modul dari Cloud Firestore
+        async function fetchModulDetail() {
+            if (!moduleId) return;
+            try {
+                const docRef = await db.collection("isi_modul").doc(moduleId).get();
+                if (docRef.exists) {
+                    const data = docRef.data();
+                    moduleTitle = data.judul;
+                    document.getElementById('m-title').innerText = moduleTitle;
+                    
+                    const catText = Array.isArray(data.kategori) ? data.kategori.join(", ") : data.kategori;
+                    document.getElementById('m-category').innerText = catText || "Umum";
+                    document.getElementById('m-level').innerText = data.level || "Pemula";
+
+                    const rawText = data.isi_materi || "";
+                    allParagraphs = rawText.split(/\r?\n/).filter(p => p.trim() !== "");
+
+                    // Matikan loading spinner & munculkan area bacaan
+                    document.getElementById('loading-state').style.display = "none";
+                    document.getElementById('modul-area').style.display = "block";
+                    
+                    showNextParagraphs();
+                    recordModuleOpened();
+                    
+                    // PANGGIL FITUR TERBARU: Ambil testimoni yang sudah ada
+                    fetchExistingReviews();
+                } else {
+                    alert("Modul tidak ditemukan!");
+                    window.location.href = "index.html";
+                }
+            } catch (error) { 
+                console.error("Gagal memuat detail modul:", error); 
+            }
+        }
+
+        // 3. Menampilkan Paragraf Bertahap dengan Efek Animasi & Progress Tracker
+        function showNextParagraphs() {
+            const chunk = allParagraphs.slice(currentIndex, currentIndex + paragraphsPerView);
+            chunk.forEach((text, index) => {
+                const p = document.createElement('p');
+                p.innerHTML = text;
+                p.className = 'fade-in-up';
+                p.style.animationDelay = `${index * 0.15}s`; 
+                contentContainer.appendChild(p);
+            });
+            currentIndex += paragraphsPerView;
+
+            let progressPercent = Math.min((currentIndex / allParagraphs.length) * 100, 100);
+            progressBar.style.width = progressPercent + '%';
+
+            if (currentIndex >= allParagraphs.length) {
+                btnLanjut.innerHTML = `Selesai Membaca <i data-lucide="check-circle"></i>`;
+                btnLanjut.className = "btn-action btn-finish";
+                
+                btnLanjut.onclick = async () => {
+                    btnLanjut.innerHTML = `<i data-lucide="loader-2" class="spin-icon"></i> Menyimpan...`;
+                    btnLanjut.style.pointerEvents = 'none';
+                    await saveReadingData();
+                    
+                    btnLanjut.style.display = "none";
+                    reviewSection.style.display = "block";
+                    setTimeout(() => window.scrollBy({ top: 300, behavior: 'smooth' }), 100);
+                };
+            }
+            lucide.createIcons();
+        }
+
+        btnLanjut.onclick = () => {
+            showNextParagraphs();
+            setTimeout(() => window.scrollBy({ top: 250, behavior: 'smooth' }), 100);
+        };
+
+        // 4. Sinkronisasi Data Riwayat ke Firebase
+        async function recordModuleOpened() {
+            if (!currentUserDocId || !moduleId) return;
+            try {
+                await db.collection("users").doc(currentUserDocId).collection("riwayat_baca").doc(moduleId).set({
+                    judul: moduleTitle,
+                    lastRead: firebase.firestore.FieldValue.serverTimestamp(),
+                    readCount: firebase.firestore.FieldValue.increment(0) 
+                }, { merge: true });
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveReadingData() {
+            if (!currentUserDocId || !moduleId) return;
+            const timeSpentSeconds = Math.floor((Date.now() - timeStart) / 1000);
+            try {
+                await db.collection("users").doc(currentUserDocId).set({
+                    totalWaktuMembaca: firebase.firestore.FieldValue.increment(timeSpentSeconds)
+                }, { merge: true });
+                
+                await db.collection("users").doc(currentUserDocId).collection("riwayat_baca").doc(moduleId).set({
+                    judul: moduleTitle,
+                    lastRead: firebase.firestore.FieldValue.serverTimestamp(),
+                    readCount: firebase.firestore.FieldValue.increment(1) 
+                }, { merge: true });
+            } catch (e) { console.error(e); }
+        }
+
+        // 5. Interaktivitas Elemen Bintang Rating & Kirim Testimoni Ulasan
+        const stars = document.querySelectorAll('.star-icon');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.getAttribute('data-val'));
+                updateStars(selectedRating);
+            });
+        });
+
+        function updateStars(rating) {
+            stars.forEach(s => {
+                if (parseInt(s.getAttribute('data-val')) <= rating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        document.getElementById('btn-submit-review').onclick = async () => {
+            const commentText = document.getElementById('comment-box').value.trim();
+            const btnSubmit = document.getElementById('btn-submit-review');
+            
+            if (selectedRating === 0) {
+                alert("Mohon pilih salah satu bintang sebagai rating ulasan Anda.");
+                return;
+            }
+
+            btnSubmit.innerHTML = `<i data-lucide="loader-2" class="spin-icon"></i> Mengirim...`;
+            btnSubmit.style.pointerEvents = 'none';
+
+            const reviewData = {
+                userId: currentUserId,
+                namaUser: currentUserName,
+                rating: selectedRating,
+                komentar: commentText || "Materi yang sangat bermanfaat!",
+                waktu: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection("isi_modul").doc(moduleId).collection("ulasan").add(reviewData);
+                window.location.href = "index.html"; 
+            } catch (error) {
+                console.error("Gagal menyimpan testimoni:", error);
+                alert("Ulasan gagal dikirim, periksa koneksi internet Anda.");
+                btnSubmit.innerHTML = `Kirim Ulasan <i data-lucide="send"></i>`;
+                btnSubmit.style.pointerEvents = 'auto';
+            }
+        };
+
+        // Aksi Tombol Lewati
+        document.getElementById('btn-skip').onclick = () => {
+            window.location.href = "index.html";
+        };
+
+        // --- 6. FUNGSI BARU: MENGAMBIL DAN MENAMPILKAN ULASAN DARI FIREBASE ---
+        async function fetchExistingReviews() {
+            if (!moduleId) return;
+            const displayArea = document.getElementById('reviews-display-area');
+            const countSpan = document.getElementById('review-count');
+            
+            displayArea.innerHTML = `<p style="text-align:center; color: var(--gray-500);"><i data-lucide="loader-2" class="spin-icon"></i> Memuat ulasan pembaca...</p>`;
+            lucide.createIcons();
+
+            try {
+                // Mengambil sub-koleksi ulasan diurutkan dari yang paling baru
+                const snapshot = await db.collection("isi_modul").doc(moduleId).collection("ulasan").orderBy("waktu", "desc").get();
+                displayArea.innerHTML = "";
+                countSpan.innerText = snapshot.size;
+
+                if (snapshot.empty) {
+                    displayArea.innerHTML = `<div class="no-reviews-msg">Belum ada ulasan untuk modul ini. Jadilah yang pertama memberikan testimoni!</div>`;
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const name = data.namaUser || "Pembaca Anonim";
+                    const initial = name.charAt(0).toUpperCase();
+                    const rating = data.rating || 5;
+                    const komentar = data.komentar || "Materi yang sangat bagus!";
+
+                    // Membuat visualisasi bintang ulasan secara dinamis
+                    let starsHtml = "";
+                    for(let i = 1; i <= 5; i++) {
+                        if(i <= rating) {
+                            starsHtml += `<i data-lucide="star"></i>`;
+                        } else {
+                            starsHtml += `<i data-lucide="star" class="empty-star"></i>`;
+                        }
+                    }
+
+                    // Merender kartu testimoni ke DOM HTML
+                    const card = document.createElement('div');
+                    card.className = 'review-card fade-in-up';
+                    card.innerHTML = `
+                        <div class="review-card-header">
+                            <div class="review-user-info">
+                                <div class="review-avatar">${initial}</div>
+                                <span class="review-author">${name}</span>
+                            </div>
+                            <div class="review-card-stars">
+                                ${starsHtml}
+                            </div>
+                        </div>
+                        <p class="review-text">${komentar}</p>
+                    `;
+                    displayArea.appendChild(card);
+                });
+                
+                // Regenerasi ulang rendering ikon lucide yang di-inject dinamis
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Gagal memuat daftar ulasan:", error);
+                displayArea.innerHTML = `<p style="color: var(--gray-500); text-align:center; font-size: 0.9rem;">Belum ada ulasan yang ter-indeks atau gagal memuat data.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

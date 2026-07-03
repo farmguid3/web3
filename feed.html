@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komunitas Petani - Farmguide</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="feed.css">
+</head>
+<body>
+
+    <div class="feed-app-container">
+        <div class="feed-app-header">
+            <div class="header-back-block">
+                <i data-lucide="arrow-left" class="back-btn" onclick="window.location.href='index.html'"></i>
+                <h2 id="header-title">Komunitas Petani</h2>
+            </div>
+            <button id="btn-open-upload" class="btn-trigger-upload">
+                <i data-lucide="plus-square" style="width: 18px; height: 18px;"></i> <span class="hide-mobile">Buat Postingan</span>
+            </button>
+        </div>
+
+        <div class="feed-main-area">
+            
+            <div id="tab-home" class="feed-tab-content active-tab">
+                <div id="feed-scroller" class="scroller-container">
+                    <div class="loading-state">Memuat lini masa...</div>
+                </div>
+            </div>
+
+            <div id="tab-profile" class="feed-tab-content" style="display: none;">
+                <div class="profile-header-info">
+                    <div class="profile-avatar-big" id="prof-avatar-big">P</div>
+                    <div class="profile-stats">
+                        <h3 id="prof-name-big">Memuat...</h3>
+                        <div class="stat-numbers">
+                            <div><strong id="stat-posts">0</strong> Postingan</div>
+                        </div>
+                    </div>
+                </div>
+                <hr style="border: 0; border-top: 1px solid var(--gray-200); margin: 0;">
+                <div id="profile-scroller" class="scroller-container">
+                    <div class="loading-state">Memuat postingan Anda...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav-bar">
+            <button class="nav-item active" onclick="switchTab('home', this)">
+                <i data-lucide="home"></i>
+                <span>Beranda</span>
+            </button>
+            <button class="nav-item" onclick="window.location.href='roomchat.html'">
+                <i data-lucide="message-square"></i>
+                <span>Chat</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('profile', this)">
+                <i data-lucide="user"></i>
+                <span>Profil</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="upload-modal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-card-header">
+                <h3>Buat Postingan Baru</h3>
+                <button id="btn-close-upload" class="btn-close-x"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-card-body">
+                <textarea id="post-caption" placeholder="Apa cerita perkembangan sawah atau ladangmu hari ini?" rows="4"></textarea>
+                <div id="media-preview-box" class="media-preview-container" style="display: none;"></div>
+                <div class="upload-options-bar">
+                    <label for="input-media-files" class="label-select-file">
+                        <i data-lucide="image-plus"></i> Foto / Video
+                    </label>
+                    <input type="file" id="input-media-files" accept="image/*,video/*" multiple style="display: none;">
+                    <button id="btn-submit-post" class="btn-final-publish">Bagikan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="feed.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Chat - Farmguide</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="privatechat.css">
+</head>
+<body>
+
+    <div id="welcome-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i data-lucide="message-circle" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h3 class="modal-title">Private Chat 👋</h3>
+            <p class="modal-text">
+                Ini adalah <b>ruang obrolan pribadi</b>. Percakapan Anda dienkripsi dan hanya dapat dilihat oleh Anda dan lawan bicara.
+            </p>
+            <div class="warning-box">
+                <span>✅ Gunakan bahasa yang sopan & menghargai.</span>
+                <span>❌ Dilarang menyebarkan spam atau hoaks.</span>
+                <span>❌ Jangan membagikan data pribadi (PIN, Sandi).</span>
+            </div>
+            <button class="btn-understand" onclick="closeWelcomeModal()">Saya Mengerti</button>
+        </div>
+    </div>
+
+    <div id="poll-modal" class="modal-overlay">
+        <div class="modal-content text-left">
+            <h3 class="modal-title" style="margin-bottom: 16px;">Buat Polling Baru 📊</h3>
+            <div class="input-group">
+                <label>Pertanyaan Polling</label>
+                <input type="text" id="poll-question-input" placeholder="Apa yang ingin Anda tanyakan?">
+            </div>
+            <div class="input-group">
+                <label>Pilihan Opsi</label>
+                <div id="poll-options-container">
+                    <input type="text" class="poll-opt-field" placeholder="Opsi 1">
+                    <input type="text" class="poll-opt-field" placeholder="Opsi 2">
+                </div>
+                <button type="button" class="btn-add-opt" onclick="addPollOptionField()">+ Tambah Opsi Lain</button>
+            </div>
+            <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                <input type="checkbox" id="poll-multi-select" style="width: auto; margin: 0; cursor: pointer;">
+                <label for="poll-multi-select" style="margin: 0; cursor: pointer; font-weight: 500; font-size: 0.85rem;">Izinkan pilih lebih dari satu opsi</label>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closePollModal()">Batal</button>
+                <button class="btn-submit" onclick="submitPoll()">Bagikan Polling</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="module-modal" class="modal-overlay">
+        <div class="modal-content text-left">
+            <h3 class="modal-title" style="margin-bottom: 8px;">Bagikan Materi 📚</h3>
+            <p class="modal-text" style="margin-bottom: 16px; font-size: 0.85rem;">Pilih modul pembelajaran yang ingin Anda bagikan ke ruang obrolan:</p>
+            <div id="module-list-container" class="module-list-container"></div>
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button class="btn-cancel" onclick="closeModuleModal()" style="width: 100%;">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        
+        <div class="chat-header">
+            <div class="header-left">
+                <i data-lucide="arrow-left" class="back-btn" onclick="window.location.href='chatlist.html'"></i>
+                <div>
+                    <h2 id="chat-target-name">Memuat...</h2>
+                    <p>Obrolan Pribadi</p>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="user-badge">
+                    <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+                    <span id="display-nama-user">Memuat...</span>
+                </div>
+
+                <button class="nav-direct-btn" onclick="window.location.href='index.html'" title="Home">
+                    <i data-lucide="home"></i>
+                </button>
+                <button class="nav-direct-btn" onclick="window.location.href='feed.html'" title="Feed">
+                    <i data-lucide="layout-list"></i>
+                </button>
+                <button class="nav-direct-btn" onclick="window.location.href='roomchat.html'" title="Grup Chat">
+                    <i data-lucide="users"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="chat-box" class="chat-box">
+            <div class="loading-chat">Memuat percakapan...</div>
+        </div>
+
+        <div id="reply-banner" class="reply-banner" style="display: none;">
+            <div class="reply-banner-content">
+                <span id="reply-name" class="reply-name">Membalas</span>
+                <span id="reply-text" class="reply-text">Teks pesan...</span>
+            </div>
+            <button class="cancel-reply" onclick="cancelReply()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="file" id="input-gallery" accept="image/*,video/*" style="display: none;">
+            <input type="file" id="input-camera" accept="image/*,video/*" capture="environment" style="display: none;">
+            
+            <button class="btn-action" onclick="document.getElementById('input-gallery').click()" title="Galeri">
+                <i data-lucide="paperclip"></i>
+            </button>
+            <button class="btn-action" onclick="document.getElementById('input-camera').click()" title="Kamera">
+                <i data-lucide="camera"></i>
+            </button>
+            <button class="btn-action" onclick="openPollModal()" title="Buat Polling">
+                <i data-lucide="bar-chart-2"></i>
+            </button>
+            <button class="btn-action" onclick="openModuleModal()" title="Bagikan Modul">
+                <i data-lucide="book-open"></i>
+            </button>
+
+            <input type="text" id="msg-input" class="chat-input" placeholder="Tulis pesan..." autocomplete="off">
+            <button id="btn-send" class="btn-send"><i data-lucide="send"></i></button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="privatechat.js"></script>
+</body>
+</html>

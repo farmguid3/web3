@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmguide - Sistem Proteksi Gagal Panen Pintar</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon animate-pulse-slow">
+                    <i data-lucide="sprout"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Farmguide <span class="badge-version">v2.5 IoT</span></h1>
+                    <p class="hide-mobile">Sistem Proteksi Gagal Panen Pintar</p>
+                </div>
+            </div>
+
+            <nav class="nav-tabs desktop-only" style="margin-left: 32px; margin-right: auto;">
+                <button class="tab-btn active" data-target="dashboard">DASHBOARD</button>
+                <button class="tab-btn" data-target="simulasi">SIMULASI</button>
+                <button class="tab-btn" data-target="edukasi">EDUKASI</button>
+
+                <a href="roomchat.html" class="btn-menu-fitur" style="text-decoration: none; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #16a34a, #0ea5e9); color: white; padding: 12px 20px; border-radius: 30px; font-weight: 600; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2); transition: 0.2s;">
+                    <i data-lucide="message-circle"></i>
+                    <span>Chat Farm</span>
+                </a>
+
+                <a href="feed.html" class="btn-menu-fitur" style="text-decoration: none; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #16a34a, #0ea5e9); color: white; padding: 12px 20px; border-radius: 30px; font-weight: 600; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2); transition: 0.2s;">
+                    <i data-lucide="users"></i>
+                    <span>Komunitas Petani</span>
+                </a>
+            </nav>
+
+            <div class="auth-zone desktop-only" >
+                <button id="btn-login-desktop" class="btn-login" >
+                    <i data-lucide="log-in"></i> <span>Masuk</span>
+                </button>
+                <button class="tab-btn" data-target="notifikasi">
+                    <i data-lucide="bell"></i>
+                    <span>Notifikasi</span>
+                </button>
+
+
+
+
+
+
+
+
+                <div id="profile-container-desktop" class="profile-dropdown-wrapper hidden">
+                    <button id="btn-profile-desktop" class="btn-avatar">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Avatar Pengguna" class="avatar-img">
+                        <span class="online-indicator"></span>
+                    </button>
+
+                    <div id="dropdown-menu-desktop" class="dropdown-content hidden">
+                        <div class="dropdown-header">
+                            <h4>Sri Wahyuni</h4>
+                            <p>Petani Premium</p>
+                        </div>
+                        <hr>
+                        <a href="profile.html" class="dropdown-item"><i data-lucide="user"></i> Profil Saya</a>
+                        <a href="#" class="dropdown-item"><i data-lucide="settings"></i> Pengaturan</a>
+                        <hr>
+                        <a href="#" id="btn-logout-desktop" class="dropdown-item text-danger"><i data-lucide="log-out"></i> Keluar</a>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-mobile-menu" class="btn-mobile">
+                <i data-lucide="menu" id="menu-icon"></i>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <div class="mobile-location">
+                <span><i data-lucide="map-pin"></i> <span id="mobile-location-text">Lokasi Belum Dikesan</span></span>
+                <button id="btn-mobile-location">Ganti</button>
+            </div>
+            
+            <div class="mobile-tabs">
+                <button class="tab-btn active" data-target="dashboard">DASHBOARD</button>
+                <button class="tab-btn" data-target="simulasi">SIMULASI</button>
+                <button class="tab-btn" data-target="edukasi">EDUKASI</button>
+            </div>
+
+            <div class="mobile-extra-menu">
+                <a href="roomchat.html" class="mobile-extra-link">
+                    <i data-lucide="message-circle"></i> Chat Farm
+                </a>
+                <a href="feed.html" class="mobile-extra-link">
+                    <i data-lucide="users"></i> Komunitas Petani
+                </a>
+                <button class="mobile-extra-link tab-btn" data-target="notifikasi" style="border: none; text-align: left; justify-content: flex-start; width: 100%;">
+                    <i data-lucide="bell"></i> Notifikasi
+                </button>
+            </div>
+
+            <div class="mobile-auth-zone">
+                <button id="btn-login-mobile" class="btn-login-mobile">
+                    <i data-lucide="log-in"></i> Masuk ke Akun
+                </button>
+                
+                <div id="profile-container-mobile">
+                    <div class="mobile-user-card">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Avatar" class="avatar-img">
+                        <div>
+                            <h4>Sri Wahyuni</h4>
+                            <p>Petani Premium</p>
+                        </div>
+                    </div>
+                    <div class="mobile-profile-links">
+                        <a href="profile.html"><i data-lucide="user"></i> Profil Saya</a>
+                        <a href="#"><i data-lucide="settings"></i> Pengaturan</a>
+                        <button id="btn-logout-mobile" class="text-danger"><i data-lucide="log-out"></i> Keluar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <main class="main-content">
+        <section id="view-dashboard" class="view-section active">
+            <div class="welcome-banner" style="background: linear-gradient(135deg, var(--green-800), var(--green-600)); color: white; padding: 32px; border-radius: 24px; margin-bottom: 32px; box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.2);">
+                <h1 style="font-size: 2rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.025em;">
+                    Bertani Lebih Cerdas, Panen Lebih Pasti.
+                </h1>
+                <p style="font-size: 1rem; color: var(--green-100); margin-bottom: 24px; line-height: 1.6; max-width: 700px;">
+                    Farmguide hadir sebagai asisten digital untuk lahan Anda. Kenali risiko gagal panen lebih awal dan ambil keputusan yang tepat dengan panduan AI serta data sensor langsung dari petak tanah Anda.
+                </p>
+                <button style="background: white; color: var(--green-800); border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    Lihat modul pertanian
+                </button>
+            </div>
+
+            <div class="header-card">
+                <div>
+                    <h2>Kondisi Tanah Terkini</h2>
+                    <p>Status sensor IoT masa nyata pada petak tanah aktif anda.</p>
+                </div>
+                <div class="status-badge">
+                    <div class="ping-dot"></div>
+                    <span>Pemantauan AI Aktif</span>
+                </div>
+            </div>
+
+ <!-- GANTI BLOK PENCARIAN & PETA DI INDEX.HTML DENGAN INI -->
+<div class="search-maps-container" style="background: white; padding: 16px; border-radius: 16px 16px 0 0; border: 2px solid var(--gray-200); border-bottom: none; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+    
+    <!-- Ikon Pencarian -->
+    <div style="color: var(--gray-500); display: flex; align-items: center;">
+        <i data-lucide="search"></i>
+    </div>
+    
+    <!-- Kolom Input (Otomatis menyesuaikan layar) -->
+    <input type="text" id="input-search-maps" placeholder="Cari lokasi, koordinat..." style="flex: 1; min-width: 150px; border: none; outline: none; font-family: var(--font-family); font-size: 0.9rem; color: var(--gray-800);">
+    
+    <!-- Area Tombol (Akan turun baris di HP, tapi tetap sebaris di Desktop) -->
+    <div class="search-maps-actions" style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1 1 300px;">
+        
+        <!-- Tombol Cari (Warna Hijau Gelap) -->
+        <button id="btn-popover-manual" style="flex: 1; min-width: 130px; background: var(--green-600); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
+            <i data-lucide="map"></i> Cari di Peta
+        </button>
+
+        <!-- Tombol Lokasi (Warna Hijau Terang) & Popover -->
+        <div style="flex: 1; min-width: 130px; position: relative; display: flex;">
+            
+            <button id="btn-location" style="width: 100%; background: var(--green-50); color: var(--green-800); border: 1px solid var(--green-300); padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; transition: 0.3s;">
+                <i data-lucide="map-pin" style="width: 16px; flex-shrink: 0;"></i>
+                <span id="location-text" style="display: block; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Pilih Lokasi</span>
+            </button>
+
+            <!-- Popover: diubah right: 0 agar tidak bocor menggeser layar HP ke kanan -->
+            <div id="location-popover" class="location-popover" style="right: 0; left: auto; margin-top: 4px; width: max-content; min-width: 260px;">
+                <h4 style="margin: 0 0 12px 0; font-size: 0.9rem; color: var(--gray-800); text-align: center;">Atur Lokasi Pantau</h4>
+                <button id="btn-popover-gps" class="popover-btn-gps">
+                    <i data-lucide="crosshair"></i> Lokasi Saat Ini (GPS)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+            <div id="map" style="height: 300px; width: 100%; border-radius: 0 0 16px 16px; margin-bottom: 24px; z-index: 1; border: 2px solid var(--gray-200);"></div>
+
+            <div id="weather-container" style="margin-bottom: 24px;"></div>
+
+            <div class="sensor-grid" style="margin-bottom: 24px;">
+                <div class="sensor-card blue">
+                    <div class="sensor-header">
+                        <div class="sensor-icon"><i data-lucide="droplets"></i></div>
+                        <span class="badge optimal">Optimal</span>
+                    </div>
+                    <div class="sensor-body">
+                        <h3>Kelembapan Cuaca</h3>
+                        <div class="sensor-value" id="weather-humidity-val">--%</div>
+                    </div>
+                </div>
+
+                <div class="sensor-card orange">
+                    <div class="sensor-header">
+                        <div class="sensor-icon"><i data-lucide="thermometer"></i></div>
+                        <span class="badge normal">Normal</span>
+                    </div>
+                    <div class="sensor-body">
+                        <h3>Suhu Sekitar</h3>
+                        <div class="sensor-value" id="weather-temp-val">--°C</div>
+                    </div>
+                </div>
+
+                <div class="sensor-card purple">
+                    <div class="sensor-header">
+                        <div class="sensor-icon"><i data-lucide="clock"></i></div>
+                        <span class="badge ideal">Waktu Lokal</span>
+                    </div>
+                    <div class="sensor-body">
+                        <h3>Jam Digital</h3>
+                        <div class="sensor-value" id="live-clock" style="font-size: 2rem; font-weight: 700;">00:00:00</div>
+                    </div>
+                </div>
+
+                <div class="sensor-card indigo alert-card">
+                    <div class="sensor-header">
+                        <div class="sensor-icon"><i data-lucide="cloud-rain"></i></div>
+                        <span class="badge danger icon-bounce">Di Perhatikan</span>
+                    </div>
+                    <div class="sensor-body">
+                        <h3>Ramalan Hujan / Cuaca</h3>
+                        <div class="sensor-value" id="weather-desc-val" style="font-size: 1.5rem;">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-alert">
+                <div class="alert-icon"><i data-lucide="alert-triangle"></i></div>
+                <div>
+                    <h3>Saranan Mitigasi AI Terkini</h3>
+                    <p>Suhu purata menghampiri 28°C dengan kadar hujan tinggi diramalkan malam ini. Sediakan saluran saliran tambahan untuk mengelakkan takungan air berlebihan di pangkal akar bagi mencegah pembusukan.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-simulasi" class="view-section hidden">
+            <div class="simulasi-grid">
+                <div class="control-panel">
+                    <h3><i data-lucide="play-circle"></i> Parameter Simulasi</h3>
+                    <p>Sesuaikan keadaan cuaca untuk melihat tahap kejayaan tuaian.</p>
+                    
+                    <form id="simulasi-form">
+                        <div class="form-group">
+                            <label>Pilih Jenis Komoditi</label>
+                            <select id="crop-type">
+                                <option value="Padi IR64">Padi IR64 (Padi Sawah)</option>
+                                <option value="Jagung Hibrida">Jagung Hibrida</option>
+                                <option value="Kedelai Wilis">Soya Wilis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="label-flex">
+                                <label>Kelembapan Tanah</label>
+                                <span class="val-badge" id="val-moisture">65%</span>
+                            </div>
+                            <input type="range" id="input-moisture" min="10" max="100" value="65">
+                        </div>
+                        <div class="form-group">
+                            <div class="label-flex">
+                                <label>Suhu Sekitar (°C)</label>
+                                <span class="val-badge" id="val-temp">28°C</span>
+                            </div>
+                            <input type="range" id="input-temp" min="15" max="45" value="28">
+                        </div>
+                        <div class="form-group">
+                            <div class="label-flex">
+                                <label>Tahap pH Tanah</label>
+                                <span class="val-badge" id="val-ph">6.5</span>
+                            </div>
+                            <input type="range" id="input-ph" min="4" max="9" step="0.1" value="6.5">
+                        </div>
+                        <button type="submit" id="btn-run-sim">
+                            <i data-lucide="trending-up" id="sim-icon"></i> 
+                            <span id="sim-text">Jalankan Model AI</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="result-panel" id="sim-result-container">
+                    <div class="empty-state" id="sim-empty">
+                        <i data-lucide="layout-dashboard"></i>
+                        <h4>Bersedia Memulakan Simulasi?</h4>
+                        <p>Gunakan panel di sebelah untuk menetapkan keadaan cuaca simulasi.</p>
+                    </div>
+                    <div class="loading-state hidden" id="sim-loading">
+                        <i data-lucide="loader-2" class="spin-icon"></i>
+                        <h4>Mengira Kebarangkalian Risiko...</h4>
+                    </div>
+                    <div class="result-content hidden" id="sim-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-notifikasi" class="view-section hidden" style="padding: 20px; max-width: 800px; margin: 0 auto;">
+            <div class="section-header" style="margin-bottom: 24px;">
+                <h2 style="color: var(--gray-800); font-size: 1.5rem; font-weight: 700; margin-bottom: 4px;">📢 Notifikasi & Pengumuman Resmi</h2>
+                <p style="color: var(--gray-500); font-size: 0.9rem;">Informasi broadcast penting dari tim Admin Farmguide untuk seluruh petani.</p>
+            </div>
+            <div id="notification-list-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+        </section>
+
+        <section id="view-edukasi" class="view-section hidden">
+            <div class="header-card block-header">
+                <h2>Pusat Maklumat & Edukasi Farmguide</h2>
+                <p>Terokai ilmu mitigasi pertanian berasaskan kajian agronomi moden.</p>
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="search-edu" placeholder="Cari topik...">
+                    </div>
+                    <div class="category-tabs" id="category-container"></div>
+                </div>
+            </div>
+            <div class="article-grid" id="article-container"></div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>© 2026 Farmguide IoT Ecosystem. Hak Cipta Terpelihara.</p>
+            <div class="server-status"></div>
+        </div>
+    </footer>
+
+    <div id="auth-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h2 id="modal-title" style="margin-bottom: 16px; color: var(--green-900);">Masuk ke Akun</h2>
+            
+            <form id="auth-form" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="input-name" placeholder="Nama Lengkap" class="hidden" style="padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px;">
+                <input type="email" id="input-email" placeholder="Alamat Email" required style="padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px;">
+                <input type="password" id="input-password" placeholder="Kata Sandi" required style="padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px;">
+                
+                <button type="submit" style="background: var(--green-600); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px;">
+                    <span id="btn-submit-text">Masuk</span>
+                </button>
+            </form>
+
+            <div style="margin-top: 16px; font-size: 0.8rem; text-align: center; color: var(--gray-600);">
+                <span id="toggle-text">Belum punya akun?</span> 
+                <button id="btn-toggle-mode" style="background: none; border: none; color: var(--green-600); font-weight: bold; cursor: pointer; text-decoration: underline;">Daftar di sini</button>
+            </div>
+            
+            <button id="btn-close-modal" style="margin-top: 16px; width: 100%; background: var(--gray-200); border: none; padding: 8px; border-radius: 8px; cursor: pointer;">Batal</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/weather.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/modules.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/simulasi.js"></script>
+    <script src="js/edukasi.js"></script>
+
+
+    <script>
+    // Pastikan ID ini sesuai dengan yang ada di HTML-mu
+    const btnProfile = document.getElementById('btn-profile-mobile'); // ID tombol profil
+    const menuProfile = document.getElementById('profile-container-mobile'); // ID menu profil
+
+    if (btnProfile && menuProfile) {
+        btnProfile.addEventListener('click', function(e) {
+            e.stopPropagation(); // Mencegah klik tertutup otomatis
+            menuProfile.classList.toggle('hidden');
+            console.log("Menu profil diklik"); // Cek di Inspect Console apakah ini muncul
+        });
+    }
+</script>
+</body>
+</html>

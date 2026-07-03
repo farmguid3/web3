@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Input & Kelola Modul Edukasi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --green-600: #16a34a; --green-700: #15803d;
+            --blue-600: #2563eb; --red-600: #dc2626;
+            --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+            --gray-300: #d1d5db; --gray-500: #6b7280;
+            --gray-700: #374151; --gray-800: #1f2937;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            margin: 0; padding: 20px;
+        }
+        .container {
+            max-width: 1000px; margin: 0 auto;
+            background: white; padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .header {
+            border-bottom: 2px dashed var(--gray-200);
+            padding-bottom: 16px; margin-bottom: 24px;
+            display: flex; align-items: center; gap: 12px; justify-content: space-between;
+        }
+        .header-title { display: flex; align-items: center; gap: 12px; }
+        .header h2 { margin: 0; color: var(--green-700); font-size: 1.5rem; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label.title-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        .form-control {
+            width: 100%; padding: 12px 14px; border: 1px solid var(--gray-300);
+            border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.95rem;
+            box-sizing: border-box; outline: none;
+        }
+        .form-control:focus { border-color: var(--green-600); box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2); }
+        textarea.form-control { resize: vertical; }
+        
+        .checkbox-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px; background: #f9fafb; padding: 16px;
+            border-radius: 8px; border: 1px solid var(--gray-200); margin-bottom: 12px;
+        }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer; }
+        .checkbox-item input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: var(--green-600); }
+        .add-category-wrapper { display: flex; gap: 8px; }
+        .add-category-wrapper input { flex: 1; padding: 10px 14px; }
+        
+        .btn-action {
+            color: white; border: none; padding: 10px 20px; border-radius: 8px;
+            cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 500;
+            display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;
+        }
+        .btn-add { background: var(--gray-700); } .btn-add:hover { background: var(--gray-800); }
+        
+        .ql-toolbar { background: #f9fafb; border-radius: 8px 8px 0 0; border-color: var(--gray-300) !important; font-family: 'Poppins', sans-serif; }
+        #editor-container { height: 300px; background: white; border-radius: 0 0 8px 8px; border-color: var(--gray-300) !important; font-family: 'Poppins', sans-serif; font-size: 1rem; }
+        
+        .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        
+        .btn-submit { background: var(--green-600); width: 100%; padding: 14px 24px; font-size: 1rem; margin-top: 20px; }
+        .btn-submit:hover { background: var(--green-700); }
+        .btn-cancel { background: var(--gray-500); width: 100%; padding: 14px 24px; font-size: 1rem; margin-top: 10px; display: none; }
+        .btn-cancel:hover { background: var(--gray-700); }
+
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: none; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .table-responsive { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--gray-200); font-size: 0.9rem; }
+        th { background: var(--gray-50); font-weight: 600; color: var(--gray-700); }
+        tr:hover { background: #f8fafc; }
+        .action-buttons { display: flex; gap: 8px; }
+        .btn-sm { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
+        .btn-edit { background: var(--blue-600); } .btn-edit:hover { background: #1d4ed8; }
+        .btn-delete { background: var(--red-600); } .btn-delete:hover { background: #b91c1c; }
+        .badge { background: var(--gray-200); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; display: inline-block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div id="alert-box" class="alert alert-success">
+        <i data-lucide="check-circle"></i> <span>Aksi berhasil dilakukan!</span>
+    </div>
+
+    <div class="container" style="border-top: 6px solid var(--blue-600);">
+        <div class="header">
+            <div class="header-title">
+                <i data-lucide="bell-ring" style="color: var(--blue-600); width: 28px; height: 28px;"></i>
+                <h2 style="color: var(--gray-800);">Broadcast Pengumuman / Notifikasi</h2>
+            </div>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--gray-500); margin-top: -15px; margin-bottom: 20px;">Informasi yang Anda kirim akan langsung muncul di menu Notifikasi aplikasi pengguna.</p>
+
+        <form id="form-notif">
+            <div class="form-group">
+                <label class="title-label">Judul Pengumuman</label>
+                <input type="text" id="notif-title" class="form-control" placeholder="Contoh: Info Modul Baru / Motivasi Pagi" required>
+            </div>
+            <div class="form-group">
+                <label class="title-label">Isi Pengumuman</label>
+                <textarea id="notif-desc" class="form-control" rows="3" placeholder="Tulis rincian pesan untuk para petani..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="title-label">Lampiran Gambar / Foto (Opsional)</label>
+                <input type="file" id="notif-image" class="form-control" accept="image/*">
+                <div id="notif-upload-status" style="display: none; color: var(--blue-600); font-size: 0.85rem; margin-top: 8px;">
+                    <i data-lucide="loader-2" style="width: 14px; height: 14px; animation: spin 1s linear infinite;"></i> Sedang mengunggah gambar ke server...
+                </div>
+            </div>
+            
+            <button type="submit" id="btn-submit-notif" class="btn-action btn-submit" style="background: var(--blue-600); margin-top: 10px;">
+                <i data-lucide="send"></i> <span id="notif-btn-text">Kirim Pengumuman Sekarang</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="container" style="border-top: 6px solid var(--green-600);">
+        <div class="header">
+            <div class="header-title">
+                <i data-lucide="book-plus" style="color: var(--green-600); width: 28px; height: 28px;"></i>
+                <h2 id="form-title">Tambah Modul Edukasi Baru</h2>
+            </div>
+        </div>
+        
+        <form id="form-modul">
+            <div class="form-group">
+                <label class="title-label">Judul Materi / Modul</label>
+                <input type="text" id="judul" class="form-control" placeholder="Contoh: Cara Mengatasi Hama Wereng..." required>
+            </div>
+
+            <div class="form-group">
+                <label class="title-label">Deskripsi Singkat</label>
+                <textarea id="deskripsi" class="form-control" rows="2" placeholder="Tuliskan ringkasan modul agar menarik dibaca..." required></textarea>
+            </div>
+
+            <div class="row-grid">
+                <div class="form-group">
+                    <label class="title-label">Level Keahlian</label>
+                    <select id="level" class="form-control" required>
+                        <option value="Pemula">Pemula (Basic)</option>
+                        <option value="Menengah">Menengah (Intermediate)</option>
+                        <option value="Mahir">Mahir (Advanced)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="title-label">Waktu Baca (Menit)</label>
+                    <input type="number" id="waktu_baca" class="form-control" placeholder="Contoh: 5" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="title-label">Kategori Edukasi</label>
+                <div class="checkbox-grid" id="category-options">
+                    <label class="checkbox-item"><input type="checkbox" value="Pupuk"> Pupuk</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Hama"> Hama</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Air"> Air</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Cuaca"> Cuaca</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Teknologi"> Teknologi</label>
+                </div>
+                <div class="add-category-wrapper">
+                    <input type="text" id="new-category" class="form-control" placeholder="Kategori baru...">
+                    <button type="button" class="btn-action btn-add" onclick="addNewCategory()">Tambah</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="title-label">Isi Materi Lengkap</label>
+                <div id="editor-container"></div>
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn-action btn-submit">
+                <i data-lucide="save"></i> <span id="btn-text">Simpan Modul Baru</span>
+            </button>
+            <button type="button" id="btn-cancel" class="btn-action btn-cancel">
+                <i data-lucide="x"></i> Batal Edit
+            </button>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <i data-lucide="list" style="color: var(--gray-700); width: 28px; height: 28px;"></i>
+                <h2 style="color: var(--gray-800);">Daftar Modul Tersimpan</h2>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Judul Modul</th>
+                        <th>Kategori</th>
+                        <th>Level</th>
+                        <th style="width: 150px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="4" style="text-align: center; color: gray;">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    
+    <script>
+        lucide.createIcons();
+        
+        // --- KONFIGURASI FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOdMX5y27KYI-Sko82wUV89AzG8yJSMxY",
+            authDomain: "farmguide-62827.firebaseapp.com",
+            projectId: "farmguide-62827",
+            messagingSenderId: "407792688035",
+            appId: "1:407792688035:web:d21abc766dc4589fe11816"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const alertBox = document.getElementById('alert-box');
+        function showAlert(type, msg) {
+            alertBox.style.display = "flex";
+            alertBox.className = `alert alert-${type}`;
+            const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+            alertBox.innerHTML = `<i data-lucide="${icon}"></i> <span>${msg}</span>`;
+            lucide.createIcons();
+            setTimeout(() => alertBox.style.display = "none", 5000);
+        }
+
+        // ========================================================
+        // LOGIKA BROADCAST NOTIFIKASI ADMIN
+        // ========================================================
+        document.getElementById('form-notif').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('notif-title').value.trim();
+            const desc = document.getElementById('notif-desc').value.trim();
+            const fileInput = document.getElementById('notif-image');
+            const btnSubmitNotif = document.getElementById('btn-submit-notif');
+            
+            let imageUrl = null;
+            btnSubmitNotif.disabled = true;
+            document.getElementById('notif-btn-text').innerText = "Mengirim...";
+            
+            try {
+                // 1. Jika ada gambar, Upload ke Cloudinary Dulu
+                if (fileInput.files.length > 0) {
+                    document.getElementById('notif-upload-status').style.display = "block";
+                    const file = fileInput.files[0];
+                    const cloudName = "gxhjeysb"; 
+                    const uploadPreset = "farmguide"; // Pastikan preset masih Unsigned!
+                    
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("upload_preset", uploadPreset);
+                    
+                    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                        method: "POST", body: formData
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error("Gagal upload gambar");
+                    imageUrl = data.secure_url;
+                }
+                
+                // 2. Simpan Notifikasi ke Firestore Database
+                await db.collection("notifikasi_admin").add({
+                    judul: title,
+                    isi: desc,
+                    gambarUrl: imageUrl,
+                    waktu: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showAlert("success", "Pengumuman berhasil disebarkan ke pengguna!");
+                document.getElementById('form-notif').reset();
+            } catch (error) {
+                console.error(error);
+                showAlert("error", "Gagal mengirim pengumuman. Pastikan internet lancar.");
+            } finally {
+                btnSubmitNotif.disabled = false;
+                document.getElementById('notif-btn-text').innerText = "Kirim Pengumuman Sekarang";
+                document.getElementById('notif-upload-status').style.display = "none";
+            }
+        });
+
+
+        // ========================================================
+        // LOGIKA KELOLA MODUL (SAMA SEPERTI SEBELUMNYA)
+        // ========================================================
+        var quill = new Quill('#editor-container', {
+            theme: 'snow', placeholder: 'Tuliskan materi edukasi Anda di sini...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ]
+            }
+        });
+
+        function addNewCategory() {
+            const input = document.getElementById('new-category');
+            const val = input.value.trim();
+            if(val !== "") {
+                const container = document.getElementById('category-options');
+                const label = document.createElement('label');
+                label.className = 'checkbox-item';
+                label.innerHTML = `<input type="checkbox" value="${val}" checked> ${val}`;
+                container.appendChild(label);
+                input.value = "";
+            }
+        }
+
+        let editModeId = null;
+        const formModul = document.getElementById('form-modul');
+        const formTitle = document.getElementById('form-title');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnSubmitText = document.getElementById('btn-text');
+        const btnCancel = document.getElementById('btn-cancel');
+
+        btnCancel.addEventListener('click', () => {
+            editModeId = null;
+            formModul.reset();
+            quill.root.innerHTML = "";
+            
+            formTitle.innerText = "Tambah Modul Edukasi Baru";
+            btnSubmitText.innerText = "Simpan Modul Baru";
+            btnCancel.style.display = "none";
+            btnSubmit.style.background = "var(--green-600)";
+        });
+
+        function loadModules() {
+            db.collection("isi_modul").orderBy("dibuat_pada", "desc").onSnapshot((snapshot) => {
+                const tableBody = document.getElementById('table-body');
+                tableBody.innerHTML = "";
+                if(snapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Belum ada modul tersimpan.</td></tr>`;
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    let badges = "";
+                    if(data.kategori) data.kategori.forEach(k => badges += `<span class="badge">${k}</span>`);
+                    
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500;">${data.judul}</td>
+                            <td>${badges}</td>
+                            <td>${data.level}</td>
+                            <td class="action-buttons">
+                                <button class="btn-action btn-sm btn-edit" onclick='startEdit("${id}")'><i data-lucide="edit-2"></i></button>
+                                <button class="btn-action btn-sm btn-delete" onclick='deleteModule("${id}")'><i data-lucide="trash-2"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                lucide.createIcons();
+            });
+        }
+        loadModules();
+
+        window.startEdit = async function(id) {
+            try {
+                const doc = await db.collection("isi_modul").doc(id).get();
+                if(doc.exists) {
+                    const data = doc.data();
+                    editModeId = id;
+                    formTitle.innerText = "Edit Modul";
+                    btnSubmitText.innerText = "Update Data Modul";
+                    btnCancel.style.display = "flex";
+                    btnSubmit.style.background = "var(--blue-600)";
+                    
+                    document.getElementById('judul').value = data.judul;
+                    document.getElementById('deskripsi').value = data.deskripsi_singkat;
+                    document.getElementById('level').value = data.level;
+                    document.getElementById('waktu_baca').value = data.waktu_baca || 5;
+                    
+                    document.querySelectorAll('#category-options input[type="checkbox"]').forEach(cb => cb.checked = false);
+                    if(data.kategori) {
+                        data.kategori.forEach(kat => {
+                            let found = false;
+                            document.querySelectorAll('#category-options input[type="checkbox"]').forEach(cb => {
+                                if(cb.value === kat) { cb.checked = true; found = true; }
+                            });
+                            if(!found) {
+                                const container = document.getElementById('category-options');
+                                const label = document.createElement('label');
+                                label.className = 'checkbox-item';
+                                label.innerHTML = `<input type="checkbox" value="${kat}" checked> ${kat}`;
+                                container.appendChild(label);
+                            }
+                        });
+                    }
+                    quill.root.innerHTML = data.isi_materi;
+                    document.querySelector('.container').scrollIntoView({behavior: "smooth"});
+                }
+            } catch(error) { showAlert("error", "Gagal memuat data untuk diedit."); }
+        };
+
+        formModul.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const judul = document.getElementById('judul').value;
+            const deskripsi = document.getElementById('deskripsi').value;
+            const level = document.getElementById('level').value;
+            const waktu = document.getElementById('waktu_baca').value;
+            const isi_materi = quill.root.innerHTML;
+            
+            let kategori = [];
+            document.querySelectorAll('#category-options input[type="checkbox"]:checked').forEach(cb => kategori.push(cb.value));
+            
+            if(quill.getText().trim() === "") return showAlert("error", "Isi materi tidak boleh kosong!");
+            
+            btnSubmit.disabled = true;
+            const originalBtnHtml = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = `<i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i> Memproses...`;
+            
+            try {
+                const payload = {
+                    judul: judul, deskripsi_singkat: deskripsi,
+                    level: level, waktu_baca: parseInt(waktu),
+                    kategori: kategori, isi_materi: isi_materi,
+                    dibuat_pada: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if(editModeId) {
+                    await db.collection("isi_modul").doc(editModeId).update(payload);
+                    showAlert("success", "Modul berhasil diupdate!");
+                    btnCancel.click(); 
+                } else {
+                    await db.collection("isi_modul").add(payload);
+                    showAlert("success", "Modul baru berhasil disimpan!");
+                    formModul.reset(); quill.root.innerHTML = "";
+                }
+            } catch (error) { showAlert("error", "Terjadi kesalahan sistem."); } 
+            finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalBtnHtml;
+                lucide.createIcons();
+            }
+        });
+
+        window.deleteModule = async function(id) {
+            if(confirm("Yakin ingin menghapus modul ini secara permanen?")) {
+                try {
+                    await db.collection("isi_modul").doc(id).delete();
+                    showAlert("success", "Modul berhasil dihapus.");
+                    if(editModeId === id) btnCancel.click(); 
+                } catch(error) { showAlert("error", "Gagal menghapus data."); }
+            }
+        };
+    </script>
+</body>
+</html>
