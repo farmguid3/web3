@@ -444,3 +444,59 @@ window.submitComment = async function(id) {
 document.addEventListener("DOMContentLoaded", () => {
     listenAdminNotifications();
 });
+
+
+
+// Script untuk Notifikasi Instal APK
+document.addEventListener("DOMContentLoaded", () => {
+    const apkModal = document.getElementById('apk-install-modal');
+    const btnCloseApk = document.getElementById('btn-close-apk-modal');
+    const modalContent = document.getElementById('apk-modal-content');
+    const btnDownload = document.getElementById('btn-download-apk');
+
+    // Cek apakah pengguna sudah pernah menutup notif ini sebelumnya
+    const hasSeenApkModal = localStorage.getItem('hasSeenApkModal');
+
+    if (!hasSeenApkModal) {
+        // Tampilkan modal dengan delay 2 detik agar pengguna melihat dashboard dulu
+        setTimeout(() => {
+            apkModal.classList.remove('hidden');
+            
+            // Render ulang ikon Lucide untuk modal
+            if(window.lucide) { window.lucide.createIcons(); }
+            
+            // Berikan sedikit jeda untuk trigger animasi CSS
+            setTimeout(() => {
+                apkModal.style.opacity = '1';
+                modalContent.style.transform = 'translateY(0)';
+            }, 50);
+        }, 2000); // Muncul setelah 2 detik
+    }
+
+    // Fungsi untuk menyembunyikan modal
+    const closeModal = () => {
+        apkModal.style.opacity = '0';
+        modalContent.style.transform = 'translateY(20px)';
+        
+        // Tunggu animasi selesai baru sembunyikan elemen
+        setTimeout(() => {
+            apkModal.classList.add('hidden');
+        }, 300);
+        
+        // Simpan data di local storage agar tidak muncul lagi di kunjungan berikutnya
+        localStorage.setItem('hasSeenApkModal', 'true');
+    };
+
+    // Event listener tombol tutup
+    if (btnCloseApk) {
+        btnCloseApk.addEventListener('click', closeModal);
+    }
+    
+    // Jika user klik tombol download, kita juga bisa menutup modalnya
+    if (btnDownload) {
+        btnDownload.addEventListener('click', () => {
+            // Biarkan proses download berjalan, lalu tutup modal
+            setTimeout(closeModal, 500); 
+        });
+    }
+});
